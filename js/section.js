@@ -9,7 +9,7 @@ function openEditor(index) {
     url: './edit.html',
     args: isNew ? {} : { index: index },
     title: isNew ? 'Add project' : 'Edit project',
-    height: 620,
+    height: 760,
     accentColor: '#2457c5'
   });
 }
@@ -26,8 +26,13 @@ function chip(link) {
 
 function book(c, i) {
   var links = (c.links || []).map(chip).join('');
-  return '<article class="book" style="--spine:' + KC.colorHex(c.color) + '">' +
-    '<div class="spine" aria-hidden="true"></div>' +
+  var img = KC.safeUrl(c.image);
+  var cover = img
+    ? '<a class="cover" href="' + KC.esc(img) + '" target="_blank" rel="noopener noreferrer" aria-label="Open image for ' + KC.esc(c.name) + '">' +
+        '<img src="' + KC.esc(img) + '" alt="" loading="lazy"></a>'
+    : '';
+  return '<article class="book' + (img ? ' has-cover' : '') + '" style="--spine:' + KC.colorHex(c.color) + '">' +
+    '<div class="spine" aria-hidden="true"></div>' + cover +
     '<div class="book-body">' +
       '<header class="book-head">' +
         '<div class="book-title"><h3>' + KC.esc(c.name) + '</h3>' +
@@ -56,6 +61,17 @@ app.addEventListener('click', function (e) {
   if (edit) { openEditor(parseInt(edit.getAttribute('data-edit'), 10)); return; }
   if (e.target.closest('[data-add]')) openEditor();
 });
+
+// If an image fails to load, hide its column; resize when images arrive
+app.addEventListener('load', function (e) {
+  if (e.target.tagName === 'IMG') t.sizeTo('#app');
+}, true);
+app.addEventListener('error', function (e) {
+  if (e.target.tagName !== 'IMG') return;
+  var art = e.target.closest('.book');
+  if (art) art.classList.add('cover-broken');
+  t.sizeTo('#app');
+}, true);
 
 t.render(function () {
   return KC.get(t).then(render).then(function () { return t.sizeTo('#app'); });

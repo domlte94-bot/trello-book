@@ -42,3 +42,11 @@ Eso alcanza para unos 15–20 links de SharePoint. Si se llena, el formulario lo
 - Colores de lomo: `js/shared.js` → `PALETTE`.
 - Estilos: `css/style.css`.
 - Después de cambiar algo, súbelo a GitHub y recarga Trello (puede tardar un par de minutos por caché).
+
+## Imagen principal
+
+Cada proyecto puede tener una imagen que ocupa 1/4 del bloque a la izquierda.
+- **Choose from card attachments**: adjunta la imagen a la tarjeta de Trello y elígela de la lista.
+- O pega un link **directo** a la imagen (que termine en .jpg/.png o que abra solo la imagen).
+  Los links de "compartir" de SharePoint (`/:i:/...`) abren una página, no la imagen, y no se van a mostrar.
+Si una imagen no carga, el bloque se muestra sin imagen y los links siguen funcionando.

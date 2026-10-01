@@ -25,6 +25,21 @@
     </div>
 
     <div class="field">
+      <span>Main image <em>(optional)</em></span>
+      <div class="cover-field">
+        <div id="coverPreview" class="cover-preview" aria-live="polite"></div>
+        <div class="cover-inputs">
+          <input id="image" type="url" placeholder="https://… direct link to a .jpg or .png" autocomplete="off">
+          <div class="cover-buttons">
+            <button type="button" id="pickAttachment" class="btn ghost small">Choose from card attachments</button>
+            <button type="button" id="clearImage" class="btn ghost small" hidden>Remove image</button>
+          </div>
+          <div id="attachments" class="attachments" hidden></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
       <span>Links</span>
       <div id="links" class="link-rows"></div>
       <button type="button" id="addLink" class="btn ghost small">+ Add link</button>

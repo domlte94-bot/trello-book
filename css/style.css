@@ -58,6 +58,36 @@ body.editor { background: var(--surface); padding: 16px 20px 20px; }
 .empty p { margin: 0 0 10px; color: var(--muted); }
 .add-more { margin-top: 8px; }
 
+/* Main image: 1/4 left, content right */
+.shelf:has(.has-cover) { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }
+.cover { flex: 0 0 25%; max-width: 25%; display: block; background: var(--surface-2); overflow: hidden; }
+.cover img { width: 100%; height: 100%; min-height: 120px; object-fit: cover; display: block; }
+.book.cover-broken .cover { display: none; }
+@media (max-width: 400px) {
+  .book.has-cover { flex-wrap: wrap; }
+  .book.has-cover .cover { flex: 1 1 calc(100% - 10px); max-width: none; order: 0; }
+  .book.has-cover .cover img { height: 140px; min-height: 0; }
+  .book.has-cover .book-body { flex-basis: 100%; }
+}
+
+/* Image field in the form */
+.cover-field { display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: start; }
+.cover-preview { width: 120px; aspect-ratio: 4 / 3; border-radius: 6px; border: 1px dashed var(--line);
+  background: var(--surface-2); overflow: hidden; display: grid; place-items: center; text-align: center; }
+.cover-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover-preview span { font-size: 12px; color: var(--muted); padding: 6px; }
+.cover-preview.bad { border-color: var(--danger); }
+.cover-preview.bad span { color: var(--danger); }
+.cover-inputs { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cover-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+.attachments { display: flex; gap: 6px; flex-wrap: wrap; }
+.attachments .hint { margin: 0; }
+.thumb { width: 72px; height: 54px; padding: 0; border: 2px solid transparent; border-radius: 6px;
+  overflow: hidden; cursor: pointer; background: var(--surface-2); }
+.thumb:hover { border-color: var(--primary); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (max-width: 480px) { .cover-field { grid-template-columns: 1fr; } }
+
 /* Botones */
 .btn { font: inherit; font-weight: 500; border: 0; border-radius: 4px; padding: 6px 12px; cursor: pointer; }
 .btn.small { padding: 4px 10px; font-size: 13px; }
@@ -69,7 +99,7 @@ body.editor { background: var(--surface); padding: 16px 20px 20px; }
   border: 0; border-radius: 4px; background: transparent; color: var(--muted); cursor: pointer; }
 .icon-btn:hover { background: var(--chip-hover); color: var(--text); }
 .icon-btn svg { width: 16px; height: 16px; }
-:is(.btn, .icon-btn, .chip, .swatch, input, textarea, summary):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+:is(.btn, .icon-btn, .chip, .swatch, .cover, .thumb, input, textarea, summary):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 /* Formulario */
 .field { display: block; margin-bottom: 16px; }

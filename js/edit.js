@@ -41,7 +41,64 @@ function buildLinks() {
   linksEl.innerHTML = state.links.map(linkRow).join('');
 }
 
+// ---- Main image ----
+function setImage(url) {
+  state.image = url || '';
+  $('image').value = state.image;
+  $('clearImage').hidden = !state.image;
+  var prev = $('coverPreview');
+  var safe = KC.safeUrl(state.image);
+  if (!safe) { prev.innerHTML = '<span>No image</span>'; prev.classList.remove('bad'); return; }
+  prev.innerHTML = '<img alt="">';
+  var im = prev.querySelector('img');
+  im.onload = function () { prev.classList.remove('bad'); };
+  im.onerror = function () {
+    prev.classList.add('bad');
+    prev.innerHTML = '<span>Can\'t show this link as an image</span>';
+  };
+  im.src = safe;
+}
+
+function bestPreview(a) {
+  var p = (a.previews || []).filter(function (x) { return x.url; });
+  p.sort(function (x, y) { return (x.width || 0) - (y.width || 0); });
+  for (var i = 0; i < p.length; i++) if ((p[i].width || 0) >= 400) return p[i].url;
+  return p.length ? p[p.length - 1].url : a.url;
+}
+
+$('image').addEventListener('change', function () { setImage(this.value.trim()); });
+$('clearImage').addEventListener('click', function () { setImage(''); });
+
+$('pickAttachment').addEventListener('click', function () {
+  var box = $('attachments');
+  if (!box.hidden) { box.hidden = true; return; }
+  t.card('attachments').then(function (card) {
+    var imgs = (card.attachments || []).filter(function (a) {
+      return /^image\//.test(a.mimeType || '') || (a.previews && a.previews.length) ||
+        /\.(jpe?g|png|gif|webp)(\?|$)/i.test(a.url || '');
+    });
+    if (!imgs.length) {
+      box.innerHTML = '<p class="hint">This card has no image attachments. Attach one to the card first, then try again.</p>';
+    } else {
+      box.innerHTML = imgs.map(function (a) {
+        var u = bestPreview(a);
+        return '<button type="button" class="thumb" data-url="' + KC.esc(u) + '" title="' + KC.esc(a.name || '') + '">' +
+          '<img src="' + KC.esc(u) + '" alt="' + KC.esc(a.name || 'Attachment') + '"></button>';
+      }).join('');
+    }
+    box.hidden = false;
+  });
+});
+
+$('attachments').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-url]');
+  if (!b) return;
+  setImage(b.getAttribute('data-url'));
+  $('attachments').hidden = true;
+});
+
 function fill() {
+  setImage(state.image || '');
   $('name').value = state.name;
   $('location').value = state.location || '';
   buildSwatches();
@@ -121,7 +178,11 @@ $('form').addEventListener('submit', function (e) {
     links.push({ label: l.label || KC.autoLabel(url), url: url });
   }
 
-  var client = { name: name, location: $('location').value.trim(), color: state.color, links: links };
+  var imgRaw = $('image').value.trim();
+  var image = imgRaw ? KC.safeUrl(imgRaw) : '';
+  if (imgRaw && !image) { showError('The image link isn\'t valid. It must start with https://'); return; }
+
+  var client = { name: name, location: $('location').value.trim(), color: state.color, image: image, links: links };
   if (index === null) clients.push(client); else clients[index] = client;
 
   KC.save(t, clients).then(function () { t.closeModal(); }, function (err) {

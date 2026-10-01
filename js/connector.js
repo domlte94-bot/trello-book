@@ -8,7 +8,7 @@ function openEditor(t, index) {
     url: './edit.html',
     args: isNew ? {} : { index: index },
     title: isNew ? 'Add project' : 'Edit project',
-    height: 620,
+    height: 760,
     accentColor: '#2457c5'
   });
 }
