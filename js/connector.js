@@ -1,4 +1,4 @@
-/* Registro del Power-Up: sección en la tarjeta, botón y badge */
+/* Power-Up registration: card section, button and badge */
 var BASE = window.location.href.replace(/[^/]*$/, '');
 var ICON = BASE + 'img/icon.svg';
 
@@ -7,7 +7,7 @@ function openEditor(t, index) {
   return t.modal({
     url: './edit.html',
     args: isNew ? {} : { index: index },
-    title: isNew ? 'Agregar cliente' : 'Editar cliente',
+    title: isNew ? 'Add client' : 'Edit client',
     height: 620,
     accentColor: '#2457c5'
   });
@@ -16,18 +16,18 @@ function openEditor(t, index) {
 TrelloPowerUp.initialize({
   'card-back-section': function (t) {
     return {
-      title: 'Clientes',
+      title: 'Clients',
       icon: ICON,
       content: { type: 'iframe', url: t.signUrl('./section.html'), height: 140 }
     };
   },
   'card-buttons': function () {
-    return [{ icon: ICON, text: 'Agregar cliente', callback: function (t) { return openEditor(t); } }];
+    return [{ icon: ICON, text: 'Add client', callback: function (t) { return openEditor(t); } }];
   },
   'card-badges': function (t) {
     return KC.get(t).then(function (c) {
       if (!c || !c.length) return [];
-      return [{ icon: ICON, text: c.length === 1 ? '1 cliente' : c.length + ' clientes' }];
+      return [{ icon: ICON, text: c.length === 1 ? '1 client' : c.length + ' clients' }];
     });
   }
 });

@@ -1,4 +1,4 @@
-/* Formulario para agregar / editar un cliente */
+/* Form to add / edit a client */
 var t = TrelloPowerUp.iframe();
 KC.applyTheme(t);
 
@@ -23,9 +23,9 @@ function buildSwatches() {
 
 function linkRow(l, i) {
   return '<div class="link-row" data-i="' + i + '">' +
-    '<input class="l-label" type="text" placeholder="Nombre (ej. Book, Scan inicial)" value="' + KC.esc(l.label) + '">' +
+    '<input class="l-label" type="text" placeholder="Name (e.g. Book, Initial scan)" value="' + KC.esc(l.label) + '">' +
     '<input class="l-url" type="url" placeholder="https://…" value="' + KC.esc(l.url) + '">' +
-    '<button type="button" class="icon-btn" data-remove="' + i + '" aria-label="Quitar link">' +
+    '<button type="button" class="icon-btn" data-remove="' + i + '" aria-label="Remove link">' +
       '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
     '</button></div>';
 }
@@ -50,7 +50,7 @@ function fill() {
   $('name').focus();
 }
 
-// Eventos
+// Events
 $('swatches').addEventListener('click', function (e) {
   var b = e.target.closest('[data-color]');
   if (!b) return;
@@ -66,7 +66,7 @@ linksEl.addEventListener('click', function (e) {
   buildLinks();
 });
 
-// Poner nombre automático al pegar un link
+// Auto-name a link when it's pasted
 linksEl.addEventListener('change', function (e) {
   if (!e.target.classList.contains('l-url')) return;
   var row = e.target.closest('.link-row');
@@ -85,7 +85,7 @@ $('addLink').addEventListener('click', function () {
 
 $('importBtn').addEventListener('click', function () {
   var found = KC.parseText($('importText').value);
-  if (!found.length) { showError('No se encontró ningún link en el texto pegado.'); return; }
+  if (!found.length) { showError('No links found in the pasted text.'); return; }
   readLinks();
   state.links = state.links.filter(function (l) { return l.url || l.label; }).concat(found);
   buildLinks();
@@ -99,7 +99,7 @@ var confirmDelete = false;
 $('deleteBtn').addEventListener('click', function () {
   if (!confirmDelete) {
     confirmDelete = true;
-    this.textContent = 'Click otra vez para eliminar';
+    this.textContent = 'Click again to delete';
     return;
   }
   clients.splice(index, 1);
@@ -110,14 +110,14 @@ $('form').addEventListener('submit', function (e) {
   e.preventDefault();
   readLinks();
   var name = $('name').value.trim();
-  if (!name) { showError('Escribe el nombre del cliente.'); $('name').focus(); return; }
+  if (!name) { showError('Enter the client name.'); $('name').focus(); return; }
 
   var links = [];
   for (var i = 0; i < state.links.length; i++) {
     var l = state.links[i];
     if (!l.url && !l.label) continue;
     var url = KC.safeUrl(l.url);
-    if (!url) { showError('El link "' + (l.label || l.url) + '" no es válido. Debe empezar con https://'); return; }
+    if (!url) { showError('The link "' + (l.label || l.url) + '" isn\'t valid. It must start with https://'); return; }
     links.push({ label: l.label || KC.autoLabel(url), url: url });
   }
 

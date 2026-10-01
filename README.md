@@ -1,4 +1,4 @@
-# Power-Up "Clientes" para Trello
+# Power-Up "Clients" para Trello
 
 Muestra dentro de cada tarjeta un bloque por cliente (con su color de lomo) y sus links
 de SharePoint, Matterport, etc. como botones con nombre, en vez de URLs largas.
@@ -23,14 +23,14 @@ Cualquier hosting con HTTPS funciona igual (Netlify, el servidor de kanegraphica
 
 ## 3. Activarlo en el tablero
 
-Tablero → **Power-Ups** → pestaña **Custom** → agrega "Clientes".
+Tablero → **Power-Ups** → pestaña **Custom** → agrega "Clients".
 
 ## Uso
 
-- En la tarjeta aparece la sección **Clientes** y el botón **Agregar cliente**.
-- En el formulario, la sección **Pegar texto de Amazing Fields** acepta el texto tal cual
+- En la tarjeta aparece la sección **Clients** y el botón **Add client**.
+- En el formulario, la sección **Paste text from Amazing Fields** acepta el texto tal cual
   lo tienes hoy y saca los links con su nombre automáticamente.
-- Al pegar un link sin nombre, se le pone uno según el dominio (Book, Scan, Proyecto final).
+- Al pegar un link sin nombre, se le pone uno según el dominio (Book, Initial scan, Completed project).
 
 ## Límite
 

@@ -1,17 +1,17 @@
-/* Utilidades compartidas: datos, colores, links */
+/* Shared helpers: data, colors, links */
 var KC = (function () {
   var KEY = 'clients';
-  // Trello permite ~4096 caracteres por tarjeta en este espacio
+  // Trello allows ~4096 characters per card in this scope
   var LIMIT = 4000;
 
   var PALETTE = [
-    { id: 'navy',   hex: '#2457c5', name: 'Azul' },
-    { id: 'plum',   hex: '#8b3fb5', name: 'Morado' },
-    { id: 'teal',   hex: '#0f8b8d', name: 'Verde azulado' },
-    { id: 'forest', hex: '#3d8b37', name: 'Verde' },
-    { id: 'amber',  hex: '#c98a0b', name: 'Ámbar' },
-    { id: 'brick',  hex: '#c2412d', name: 'Rojo' },
-    { id: 'slate',  hex: '#5b6577', name: 'Gris' }
+    { id: 'navy',   hex: '#2457c5', name: 'Blue' },
+    { id: 'plum',   hex: '#8b3fb5', name: 'Purple' },
+    { id: 'teal',   hex: '#0f8b8d', name: 'Teal' },
+    { id: 'forest', hex: '#3d8b37', name: 'Green' },
+    { id: 'amber',  hex: '#c98a0b', name: 'Amber' },
+    { id: 'brick',  hex: '#c2412d', name: 'Red' },
+    { id: 'slate',  hex: '#5b6577', name: 'Gray' }
   ];
 
   function colorHex(id) {
@@ -25,8 +25,8 @@ var KC = (function () {
     var size = JSON.stringify(clients).length;
     if (size > LIMIT) {
       return Promise.reject(new Error(
-        'Esta tarjeta ya no tiene espacio (' + size + ' de ' + LIMIT + ' caracteres). ' +
-        'Acorta los nombres o mueve algunos clientes a otra tarjeta.'));
+        'This card is out of space (' + size + ' of ' + LIMIT + ' characters). ' +
+        'Shorten some names or move a few clients to another card.'));
     }
     return t.set('card', 'shared', KEY, clients);
   }
@@ -44,7 +44,7 @@ var KC = (function () {
     } catch (e) { return null; }
   }
 
-  // Tipo de link según el dominio
+  // Link type based on the domain
   function kind(url) {
     var h = '';
     try { h = new URL(url).hostname; } catch (e) {}
@@ -59,13 +59,13 @@ var KC = (function () {
     var k = kind(url);
     try {
       var p = new URL(url).pathname;
-      if (k.id === 'matterport') return /\/models\//.test(p) ? 'Proyecto final' : 'Scan';
+      if (k.id === 'matterport') return /\/models\//.test(p) ? 'Completed project' : 'Initial scan';
     } catch (e) {}
     if (k.id === 'sharepoint') return 'Book';
     return k.label;
   }
 
-  // Íconos simples por tipo (SVG en línea)
+  // Simple inline SVG icons per type
   var ICONS = {
     sharepoint: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h7l3 3v8H3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 2.5v3h3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
     matterport: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8 13.5 5v6L8 14.2 2.5 11V5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2.5 5 8 8.2 13.5 5M8 8.2v6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
@@ -74,7 +74,7 @@ var KC = (function () {
     web: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.6 9.4a3 3 0 0 0 4.2 0l2.4-2.4a3 3 0 0 0-4.2-4.2l-.8.8M9.4 6.6a3 3 0 0 0-4.2 0L2.8 9a3 3 0 0 0 4.2 4.2l.8-.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>'
   };
 
-  // Convierte texto pegado (p.ej. de Amazing Fields) en links con nombre
+  // Turns pasted text (e.g. from Amazing Fields) into named links
   function parseText(text) {
     var out = [], lastText = '';
     var re = /https?:\/\/[^\s<>"']+/g;

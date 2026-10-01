@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,40 +10,40 @@
   <form id="form" novalidate>
     <div class="row two">
       <label class="field">
-        <span>Cliente</span>
+        <span>Client</span>
         <input id="name" type="text" placeholder="IFCU" autocomplete="off" required>
       </label>
       <label class="field">
-        <span>Sucursal o proyecto <em>(opcional)</em></span>
+        <span>Branch or project <em>(optional)</em></span>
         <input id="location" type="text" placeholder="Sagamore" autocomplete="off">
       </label>
     </div>
 
     <div class="field">
-      <span>Color del lomo</span>
-      <div id="swatches" class="swatches" role="radiogroup" aria-label="Color"></div>
+      <span>Spine color</span>
+      <div id="swatches" class="swatches" role="radiogroup" aria-label="Spine color"></div>
     </div>
 
     <div class="field">
       <span>Links</span>
       <div id="links" class="link-rows"></div>
-      <button type="button" id="addLink" class="btn ghost small">+ Agregar link</button>
+      <button type="button" id="addLink" class="btn ghost small">+ Add link</button>
     </div>
 
     <details class="import">
-      <summary>Pegar texto de Amazing Fields</summary>
-      <p class="hint">Pega el texto tal cual. Se detecta cada URL y se usa el texto anterior como nombre.</p>
+      <summary>Paste text from Amazing Fields</summary>
+      <p class="hint">Paste the text as is. Each URL is detected and the text before it becomes its name.</p>
       <textarea id="importText" rows="5" placeholder="Initial Scan&#10;https://my.matterport.com/show/?m=..."></textarea>
-      <button type="button" id="importBtn" class="btn ghost small">Extraer links</button>
+      <button type="button" id="importBtn" class="btn ghost small">Extract links</button>
     </details>
 
     <p id="error" class="error" role="alert" hidden></p>
 
     <div class="actions">
-      <button type="button" id="deleteBtn" class="btn danger" hidden>Eliminar cliente</button>
+      <button type="button" id="deleteBtn" class="btn danger" hidden>Delete client</button>
       <span class="spacer"></span>
-      <button type="button" id="cancelBtn" class="btn ghost">Cancelar</button>
-      <button type="submit" class="btn primary">Guardar cliente</button>
+      <button type="button" id="cancelBtn" class="btn ghost">Cancel</button>
+      <button type="submit" class="btn primary">Save client</button>
     </div>
   </form>
   <script src="./js/shared.js"></script>

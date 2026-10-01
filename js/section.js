@@ -1,4 +1,4 @@
-/* Vista dentro de la tarjeta */
+/* View inside the card */
 var t = TrelloPowerUp.iframe();
 var app = document.getElementById('app');
 KC.applyTheme(t);
@@ -8,7 +8,7 @@ function openEditor(index) {
   return t.modal({
     url: './edit.html',
     args: isNew ? {} : { index: index },
-    title: isNew ? 'Agregar cliente' : 'Editar cliente',
+    title: isNew ? 'Add client' : 'Edit client',
     height: 620,
     accentColor: '#2457c5'
   });
@@ -32,22 +32,22 @@ function book(c, i) {
       '<header class="book-head">' +
         '<div class="book-title"><h3>' + KC.esc(c.name) + '</h3>' +
         (c.location ? '<p>' + KC.esc(c.location) + '</p>' : '') + '</div>' +
-        '<button class="icon-btn" data-edit="' + i + '" aria-label="Editar ' + KC.esc(c.name) + '">' +
+        '<button class="icon-btn" data-edit="' + i + '" aria-label="Edit ' + KC.esc(c.name) + '">' +
           '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2.5 13.5 5 6 12.5H3.5V10z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>' +
         '</button>' +
       '</header>' +
-      (links ? '<div class="chips">' + links + '</div>' : '<p class="muted">Sin links todavía.</p>') +
+      (links ? '<div class="chips">' + links + '</div>' : '<p class="muted">No links yet.</p>') +
     '</div></article>';
 }
 
 function render(clients) {
   if (!clients || !clients.length) {
     app.innerHTML =
-      '<div class="empty"><p>Agrega un cliente para guardar sus books, scans y proyectos en esta tarjeta.</p>' +
-      '<button class="btn primary" data-add>Agregar cliente</button></div>';
+      '<div class="empty"><p>Add a client to keep their books, scans and projects on this card.</p>' +
+      '<button class="btn primary" data-add>Add client</button></div>';
   } else {
     app.innerHTML = '<div class="shelf">' + clients.map(book).join('') + '</div>' +
-      '<button class="btn ghost add-more" data-add>+ Agregar cliente</button>';
+      '<button class="btn ghost add-more" data-add>+ Add client</button>';
   }
 }
 
@@ -61,5 +61,5 @@ t.render(function () {
   return KC.get(t).then(render).then(function () { return t.sizeTo('#app'); });
 });
 
-// Reajustar altura si cambia el ancho del panel
+// Resize when the panel width changes
 window.addEventListener('resize', function () { t.sizeTo('#app'); });
