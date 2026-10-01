@@ -8,7 +8,7 @@ function openEditor(index) {
   return t.modal({
     url: './edit.html',
     args: isNew ? {} : { index: index },
-    title: isNew ? 'Add client' : 'Edit client',
+    title: isNew ? 'Add project' : 'Edit project',
     height: 620,
     accentColor: '#2457c5'
   });
@@ -43,11 +43,11 @@ function book(c, i) {
 function render(clients) {
   if (!clients || !clients.length) {
     app.innerHTML =
-      '<div class="empty"><p>Add a client to keep their books, scans and projects on this card.</p>' +
-      '<button class="btn primary" data-add>Add client</button></div>';
+      '<div class="empty"><p>Add a project to keep its books, scans and links on this card.</p>' +
+      '<button class="btn primary" data-add>Add project</button></div>';
   } else {
     app.innerHTML = '<div class="shelf">' + clients.map(book).join('') + '</div>' +
-      '<button class="btn ghost add-more" data-add>+ Add client</button>';
+      '<button class="btn ghost add-more" data-add>+ Add project</button>';
   }
 }
 

@@ -7,7 +7,7 @@ function openEditor(t, index) {
   return t.modal({
     url: './edit.html',
     args: isNew ? {} : { index: index },
-    title: isNew ? 'Add client' : 'Edit client',
+    title: isNew ? 'Add project' : 'Edit project',
     height: 620,
     accentColor: '#2457c5'
   });
@@ -16,18 +16,18 @@ function openEditor(t, index) {
 TrelloPowerUp.initialize({
   'card-back-section': function (t) {
     return {
-      title: 'Clients',
+      title: 'Projects',
       icon: ICON,
       content: { type: 'iframe', url: t.signUrl('./section.html'), height: 140 }
     };
   },
   'card-buttons': function () {
-    return [{ icon: ICON, text: 'Add client', callback: function (t) { return openEditor(t); } }];
+    return [{ icon: ICON, text: 'Add project', callback: function (t) { return openEditor(t); } }];
   },
   'card-badges': function (t) {
     return KC.get(t).then(function (c) {
       if (!c || !c.length) return [];
-      return [{ icon: ICON, text: c.length === 1 ? '1 client' : c.length + ' clients' }];
+      return [{ icon: ICON, text: c.length === 1 ? '1 project' : c.length + ' projects' }];
     });
   }
 });

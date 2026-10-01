@@ -26,7 +26,7 @@ var KC = (function () {
     if (size > LIMIT) {
       return Promise.reject(new Error(
         'This card is out of space (' + size + ' of ' + LIMIT + ' characters). ' +
-        'Shorten some names or move a few clients to another card.'));
+        'Shorten some names or move a few projects to another card.'));
     }
     return t.set('card', 'shared', KEY, clients);
   }

@@ -110,7 +110,7 @@ $('form').addEventListener('submit', function (e) {
   e.preventDefault();
   readLinks();
   var name = $('name').value.trim();
-  if (!name) { showError('Enter the client name.'); $('name').focus(); return; }
+  if (!name) { showError('Enter the client name for this project.'); $('name').focus(); return; }
 
   var links = [];
   for (var i = 0; i < state.links.length; i++) {
