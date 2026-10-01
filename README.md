@@ -58,3 +58,28 @@ subidos a la tarjeta. Marca los que pertenecen a ese proyecto y dale **Add selec
 se agregan como links con el nombre del archivo e ícono de PDF.
 Si un archivo ya está en otro proyecto, aparece la etiqueta "in [nombre]".
 Los archivos siguen guardados en Trello; el Power-Up solo los ordena.
+
+## Vista previa de archivos subidos a Trello (PDF e imágenes)
+
+Al hacer clic en un PDF o imagen adjunto a la tarjeta, se abre una ventana grande dentro de
+Trello con el archivo visible (con zoom, "Open in new tab" y "Download").
+Trello solo entrega estos archivos con permiso del usuario, por eso necesita una API key:
+
+1. trello.com/power-ups/admin → tu Power-Up → pestaña **API key** → **Generate a new API key**.
+2. En **Allowed origins** agrega tu dominio de GitHub Pages, por ejemplo
+   `https://TU-USUARIO.github.io` (sin la carpeta al final).
+3. Abre `js/shared.js` y pega la key donde dice `PASTE_YOUR_API_KEY_HERE` (casi al principio).
+4. Sube los archivos a GitHub y recarga Trello.
+
+La primera vez que abras un archivo te sale **Connect to Trello**: lo aceptas una vez y listo.
+Cada persona del equipo lo hace una vez. El permiso es de lectura y escritura (para poder subir imágenes).
+La API key no es secreta; es normal que esté en el código.
+
+Sin API key, los links a adjuntos funcionan como antes (abren/descargan en Trello).
+Los links de SharePoint, Matterport, etc. no cambian.
+
+## Subir imágenes (drag & drop)
+
+Con la misma API key, en **Main image** puedes arrastrar una imagen al cuadro, hacer clic para
+elegir un archivo, o pegarla con Ctrl/Cmd+V. Se sube como adjunto de la tarjeta y queda como
+imagen principal del proyecto.

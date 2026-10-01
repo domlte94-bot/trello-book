@@ -27,7 +27,9 @@
     <div class="field">
       <span>Main image <em>(optional)</em></span>
       <div class="cover-field">
-        <div id="coverPreview" class="cover-preview" aria-live="polite"></div>
+        <div id="coverPreview" class="cover-preview drop" tabindex="0" role="button"
+             aria-label="Drop an image here or click to choose a file"></div>
+        <input id="fileInput" type="file" accept="image/*" hidden>
         <div class="cover-inputs">
           <input id="image" type="url" placeholder="https://… direct link to a .jpg or .png" autocomplete="off">
           <div class="cover-buttons">
@@ -35,6 +37,10 @@
             <button type="button" id="clearImage" class="btn ghost small" hidden>Remove image</button>
           </div>
           <div id="attachments" class="attachments" hidden></div>
+          <div id="connect" class="connect" hidden>
+            <p class="hint">To upload images, connect this Power-Up to your Trello account once.</p>
+            <button type="button" id="connectBtn" class="btn primary small">Connect to Trello</button>
+          </div>
         </div>
       </div>
     </div>

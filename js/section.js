@@ -18,7 +18,9 @@ function chip(link) {
   var url = KC.safeUrl(link.url);
   if (!url) return '';
   var k = KC.kind(url);
-  return '<a class="chip chip-' + k.id + '" href="' + KC.esc(url) + '" target="_blank" rel="noopener noreferrer" title="' + KC.esc(url) + '">' +
+  var preview = KC.isTrelloFile(url) && KC.hasKey() ? ' data-preview="1"' : '';
+  return '<a class="chip chip-' + k.id + '" href="' + KC.esc(url) + '" target="_blank" rel="noopener noreferrer"' + preview +
+    ' data-name="' + KC.esc(link.label || '') + '" title="' + (preview ? 'Preview' : KC.esc(url)) + '">' +
     '<span class="chip-icon">' + (KC.ICONS[k.id] || KC.ICONS.web) + '</span>' +
     '<span class="chip-text">' + KC.esc(link.label || KC.autoLabel(url)) + '</span>' +
     '<span class="chip-src">' + KC.esc(k.label) + '</span></a>';
@@ -57,6 +59,17 @@ function render(clients) {
 }
 
 app.addEventListener('click', function (e) {
+  var pv = e.target.closest('[data-preview]');
+  if (pv) {
+    e.preventDefault();
+    t.modal({
+      url: './viewer.html',
+      args: { url: pv.getAttribute('href'), name: pv.getAttribute('data-name') },
+      title: pv.getAttribute('data-name') || 'Preview',
+      fullscreen: true
+    });
+    return;
+  }
   var edit = e.target.closest('[data-edit]');
   if (edit) { openEditor(parseInt(edit.getAttribute('data-edit'), 10)); return; }
   if (e.target.closest('[data-add]')) openEditor();

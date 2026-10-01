@@ -42,7 +42,8 @@ function buildLinks() {
 }
 
 // ---- Main image ----
-var EMPTY_MSG = '<span>No image</span>';
+var EMPTY_MSG = '<span>Drop an image here<br>or click to choose</span>';
+var authorized = false;
 
 function setImage(url) {
   state.image = url || '';
@@ -58,6 +59,76 @@ function setImage(url) {
     prev.innerHTML = '<span>Can\'t show this link as an image</span>';
   });
 }
+
+function needConnect() {
+  if (!KC.hasKey()) { showError('Uploading isn\'t set up yet: add the API key in js/shared.js (see README).'); return true; }
+  if (!authorized) { $('connect').hidden = false; return true; }
+  return false;
+}
+
+function upload(file) {
+  if (!file) return;
+  if (!/^image\//.test(file.type)) { showError('That file isn\'t an image.'); return; }
+  if (needConnect()) return;
+  showError('');
+  var prev = $('coverPreview');
+  prev.classList.add('busy');
+  prev.innerHTML = '<span>Uploading…</span>';
+  KC.uploadToCard(t, file).then(function (att) {
+    setImage(KC.bestPreview(att));
+  }).catch(function (err) {
+    setImage(state.image);
+    if (err.message === 'not-authorized') {
+      // Older connection was read-only: ask once more with upload permission
+      authorized = false;
+      $('connect').hidden = false;
+      showError('Please connect again to allow uploads.');
+    } else {
+      showError(err.message);
+    }
+  });
+}
+
+(function setupDrop() {
+  var zone = $('coverPreview'), input = $('fileInput');
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.add('over'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.remove('over'); });
+  });
+  zone.addEventListener('drop', function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) upload(f);
+  });
+  // Dropping outside the box shouldn't open the file in the window
+  window.addEventListener('dragover', function (e) { e.preventDefault(); });
+  window.addEventListener('drop', function (e) { e.preventDefault(); });
+
+  zone.addEventListener('click', function () { if (!needConnect()) input.click(); });
+  zone.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); zone.click(); }
+  });
+  input.addEventListener('change', function () { upload(input.files[0]); input.value = ''; });
+
+  // Paste an image with Ctrl/Cmd+V (not while typing in a text field)
+  document.addEventListener('paste', function (e) {
+    var items = (e.clipboardData && e.clipboardData.items) || [];
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image/') === 0) { e.preventDefault(); upload(items[i].getAsFile()); return; }
+    }
+  });
+
+  $('connectBtn').addEventListener('click', function () {
+    KC.authorize(t).then(function () {
+      authorized = true;
+      $('connect').hidden = true;
+      showError('');
+    }).catch(function () { showError('Trello connection was cancelled.'); });
+  });
+
+  KC.isAuthorized(t).then(function (ok) { authorized = ok; });
+})();
 
 $('image').addEventListener('change', function () { setImage(this.value.trim()); });
 $('clearImage').addEventListener('click', function () { setImage(''); });

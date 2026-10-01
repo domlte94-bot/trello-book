@@ -30,4 +30,4 @@ TrelloPowerUp.initialize({
       return [{ icon: ICON, text: c.length === 1 ? '1 project' : c.length + ' projects' }];
     });
   }
-});
+}, KC.hasKey() ? KC_CONFIG : undefined);

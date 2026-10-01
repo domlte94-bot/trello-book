@@ -77,6 +77,12 @@ body.editor { background: var(--surface); padding: 16px 20px 20px; }
   background: var(--surface-2); overflow: hidden; display: grid; place-items: center; text-align: center; }
 .cover-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .cover-preview span { font-size: 12px; color: var(--muted); padding: 6px; }
+.cover-preview.drop { cursor: pointer; transition: border-color .15s, background-color .15s; }
+.cover-preview.over { border: 2px solid var(--primary); background: var(--chip-hover); }
+.cover-preview.busy { opacity: .7; cursor: progress; }
+.connect { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.connect .hint { margin: 0; }
+@media (prefers-reduced-motion: reduce) { .cover-preview.drop { transition: none; } }
 .cover-preview.bad { border-color: var(--danger); }
 .cover-preview.bad span { color: var(--danger); }
 .cover-inputs { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
@@ -141,3 +147,21 @@ textarea { resize: vertical; margin-bottom: 8px; }
   .link-row { grid-template-columns: 1fr 28px; }
   .link-row .l-url { grid-column: 1; }
 }
+
+/* ---------- File viewer ---------- */
+body.viewer { background: var(--surface-2); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.v-bar { display: flex; align-items: center; gap: 10px; padding: 8px 14px; background: var(--surface);
+  border-bottom: 1px solid var(--line); flex: 0 0 auto; }
+.v-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.v-pages { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.v-zoom { display: flex; align-items: center; gap: 2px; font-size: 13px; color: var(--muted); }
+.v-zoom .icon-btn { font-size: 18px; line-height: 1; }
+.v-zoom span { min-width: 44px; text-align: center; }
+.v-bar .btn { text-decoration: none; white-space: nowrap; }
+.v-body { flex: 1; overflow: auto; padding: 16px 12px 32px; }
+.v-pages-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.v-page { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); max-width: none; }
+.v-img { max-width: 100%; height: auto; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.v-msg { max-width: 420px; margin: 60px auto; text-align: center; color: var(--muted); }
+.v-msg .btn { margin-top: 6px; }
+@media (max-width: 560px) { .v-pages, .v-zoom { display: none; } }

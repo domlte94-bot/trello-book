@@ -1,5 +1,11 @@
 /* Shared helpers: data, colors, links */
 
+/* ====== CONFIG: paste your Trello API key here (Power-Up admin > API key) ====== */
+var KC_CONFIG = {
+  appKey: '080ce5ba9739527301f5f8c14eb29b82',
+  appName: 'Projects'
+};
+
 
 var KC = (function () {
   var KEY = 'clients';
@@ -124,15 +130,72 @@ var KC = (function () {
     return p.length ? p[p.length - 1].url : a.url;
   }
 
+  /* ---------- Trello REST: read files attached to cards ---------- */
+  function hasKey() { return !!KC_CONFIG.appKey && KC_CONFIG.appKey.indexOf('PASTE_') !== 0; }
+  function api(t) { return hasKey() ? t.getRestApi() : null; }
+
+  function isAuthorized(t) {
+    var a = api(t);
+    return a ? a.isAuthorized().catch(function () { return false; }) : Promise.resolve(false);
+  }
+  function authorize(t) { return api(t).authorize({ scope: 'read,write', expiration: 'never' }); }
+
+  // Download a Trello attachment with the user's token -> Blob
+  function fetchTrelloFile(t, url) {
+    return api(t).getToken().then(function (tok) {
+      if (!tok) throw new Error('not-authorized');
+      return fetch(url.replace('https://trello.com/', 'https://api.trello.com/'), {
+        headers: { Authorization: 'OAuth oauth_consumer_key="' + KC_CONFIG.appKey + '", oauth_token="' + tok + '"' }
+      });
+    }).then(function (r) {
+      if (r.status === 401) throw new Error('not-authorized');
+      if (!r.ok) throw new Error('Trello returned an error (' + r.status + ').');
+      return r.blob();
+    });
+  }
+
+  // Upload a file as an attachment of the current card -> attachment JSON
+  function uploadToCard(t, file) {
+    return api(t).getToken().then(function (tok) {
+      if (!tok) throw new Error('not-authorized');
+      var fd = new FormData();
+      fd.append('file', file, file.name || 'image.png');
+      fd.append('name', file.name || 'image.png');
+      fd.append('setCover', 'false');
+      var url = 'https://api.trello.com/1/cards/' + encodeURIComponent(t.getContext().card) + '/attachments' +
+        '?key=' + encodeURIComponent(KC_CONFIG.appKey) + '&token=' + encodeURIComponent(tok);
+      return fetch(url, { method: 'POST', body: fd });
+    }).then(function (r) {
+      if (r.status === 401 || r.status === 403) throw new Error('not-authorized');
+      if (!r.ok) return r.text().then(function (x) { throw new Error('Upload failed (' + r.status + '): ' + x); });
+      return r.json();
+    });
+  }
+
+  // Show an image; if it's a Trello file that needs login, load it with the token
+  var blobCache = {};
   function loadImage(t, img, url, onFail) {
-    img.onerror = function () { if (onFail) onFail(); };
+    img.onerror = function () {
+      img.onerror = null;
+      if (!isTrelloFile(url) || !hasKey()) { if (onFail) onFail(); return; }
+      if (blobCache[url]) { img.src = blobCache[url]; return; }
+      isAuthorized(t).then(function (ok) {
+        if (!ok) throw new Error('not-authorized');
+        return fetchTrelloFile(t, url);
+      }).then(function (b) {
+        blobCache[url] = URL.createObjectURL(b);
+        img.onerror = function () { if (onFail) onFail(); };
+        img.src = blobCache[url];
+      }).catch(function () { if (onFail) onFail(); });
+    };
     img.src = url;
   }
 
-  function iframe() { return TrelloPowerUp.iframe(); }
+  function iframe() { return TrelloPowerUp.iframe(hasKey() ? KC_CONFIG : undefined); }
 
   return {
-    isTrelloFile: isTrelloFile, fileExt: fileExt,
+    isTrelloFile: isTrelloFile, fileExt: fileExt, hasKey: hasKey, isAuthorized: isAuthorized,
+    authorize: authorize, fetchTrelloFile: fetchTrelloFile, uploadToCard: uploadToCard,
     bestPreview: bestPreview, loadImage: loadImage, iframe: iframe,
     PALETTE: PALETTE, colorHex: colorHex, get: get, save: save, esc: esc,
     safeUrl: safeUrl, kind: kind, autoLabel: autoLabel, ICONS: ICONS,

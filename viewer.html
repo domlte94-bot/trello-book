@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body class="viewer">
+  <header class="v-bar">
+    <span id="vName" class="v-name"></span>
+    <span id="vPages" class="v-pages"></span>
+    <span class="spacer"></span>
+    <div id="vZoom" class="v-zoom" hidden>
+      <button type="button" class="icon-btn" id="zoomOut" aria-label="Zoom out">−</button>
+      <span id="zoomVal">100%</span>
+      <button type="button" class="icon-btn" id="zoomIn" aria-label="Zoom in">+</button>
+    </div>
+    <a id="vOpen" class="btn ghost small" target="_blank" rel="noopener" hidden>Open in new tab</a>
+    <a id="vDownload" class="btn ghost small" hidden>Download</a>
+  </header>
+  <main id="vBody" class="v-body">
+    <div id="vMsg" class="v-msg"><p>Loading…</p></div>
+    <div id="vPagesWrap" class="v-pages-wrap"></div>
+  </main>
+  <script src="./js/shared.js"></script>
+  <script src="./js/viewer.js"></script>
+</body>
+</html>
