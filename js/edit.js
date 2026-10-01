@@ -1,5 +1,5 @@
 /* Form to add / edit a client */
-var t = TrelloPowerUp.iframe();
+var t = KC.iframe();
 KC.applyTheme(t);
 
 var rawIndex = t.arg('index');
@@ -42,28 +42,21 @@ function buildLinks() {
 }
 
 // ---- Main image ----
+var EMPTY_MSG = '<span>No image</span>';
+
 function setImage(url) {
   state.image = url || '';
   $('image').value = state.image;
   $('clearImage').hidden = !state.image;
   var prev = $('coverPreview');
+  prev.classList.remove('bad', 'busy');
   var safe = KC.safeUrl(state.image);
-  if (!safe) { prev.innerHTML = '<span>No image</span>'; prev.classList.remove('bad'); return; }
+  if (!safe) { prev.innerHTML = EMPTY_MSG; return; }
   prev.innerHTML = '<img alt="">';
-  var im = prev.querySelector('img');
-  im.onload = function () { prev.classList.remove('bad'); };
-  im.onerror = function () {
+  KC.loadImage(t, prev.querySelector('img'), safe, function () {
     prev.classList.add('bad');
     prev.innerHTML = '<span>Can\'t show this link as an image</span>';
-  };
-  im.src = safe;
-}
-
-function bestPreview(a) {
-  var p = (a.previews || []).filter(function (x) { return x.url; });
-  p.sort(function (x, y) { return (x.width || 0) - (y.width || 0); });
-  for (var i = 0; i < p.length; i++) if ((p[i].width || 0) >= 400) return p[i].url;
-  return p.length ? p[p.length - 1].url : a.url;
+  });
 }
 
 $('image').addEventListener('change', function () { setImage(this.value.trim()); });
@@ -81,12 +74,15 @@ $('pickAttachment').addEventListener('click', function () {
       box.innerHTML = '<p class="hint">This card has no image attachments. Attach one to the card first, then try again.</p>';
     } else {
       box.innerHTML = imgs.map(function (a) {
-        var u = bestPreview(a);
+        var u = KC.bestPreview(a);
         return '<button type="button" class="thumb" data-url="' + KC.esc(u) + '" title="' + KC.esc(a.name || '') + '">' +
-          '<img src="' + KC.esc(u) + '" alt="' + KC.esc(a.name || 'Attachment') + '"></button>';
+          '<img data-src="' + KC.esc(u) + '" alt="' + KC.esc(a.name || 'Attachment') + '"></button>';
       }).join('');
     }
     box.hidden = false;
+    Array.prototype.forEach.call(box.querySelectorAll('img[data-src]'), function (im) {
+      KC.loadImage(t, im, im.getAttribute('data-src'));
+    });
   });
 });
 
@@ -138,6 +134,67 @@ $('addLink').addEventListener('click', function () {
   buildLinks();
   var rows = linksEl.querySelectorAll('.l-label');
   rows[rows.length - 1].focus();
+});
+
+// ---- Card attachments (PDFs, etc.) as links ----
+function cleanName(n) { return String(n || 'Attachment').replace(/\.[a-z0-9]{2,5}$/i, ''); }
+
+function usedElsewhere(url) {
+  for (var i = 0; i < clients.length; i++) {
+    if (i === index) continue;
+    var ls = clients[i].links || [];
+    for (var j = 0; j < ls.length; j++) if (ls[j].url === url) return clients[i].name;
+  }
+  return '';
+}
+
+function buildPicker(atts) {
+  readLinks();
+  var mine = state.links.map(function (l) { return l.url; });
+  var box = $('filePicker');
+  if (!atts.length) {
+    box.innerHTML = '<p class="hint">This card has no attachments yet. Attach the files to the card first, then try again.</p>';
+    return;
+  }
+  box.innerHTML = '<p class="hint">Check the files that belong to this project.</p>' + atts.map(function (a, i) {
+    var url = KC.safeUrl(a.url) || '';
+    var other = usedElsewhere(url);
+    var k = KC.kind(url);
+    return '<label class="file-opt">' +
+      '<input type="checkbox" data-att="' + i + '"' + (mine.indexOf(url) > -1 ? ' checked' : '') + '>' +
+      '<span class="chip-icon">' + (KC.ICONS[k.id] || KC.ICONS.file) + '</span>' +
+      '<span class="file-name">' + KC.esc(a.name || url) + '</span>' +
+      (other ? '<span class="file-tag">in ' + KC.esc(other) + '</span>' : '') +
+      '</label>';
+  }).join('') + '<button type="button" id="applyFiles" class="btn primary small">Add selected</button>';
+
+  $('applyFiles').addEventListener('click', function () {
+    readLinks();
+    var checks = box.querySelectorAll('input[data-att]');
+    Array.prototype.forEach.call(checks, function (c) {
+      var a = atts[Number(c.getAttribute('data-att'))];
+      var url = KC.safeUrl(a.url);
+      if (!url) return;
+      var pos = -1;
+      state.links.forEach(function (l, i) { if (l.url === url) pos = i; });
+      if (c.checked && pos < 0) state.links.push({ label: cleanName(a.name), url: url });
+      if (!c.checked && pos > -1) state.links.splice(pos, 1);
+    });
+    state.links = state.links.filter(function (l) { return l.url || l.label; });
+    buildLinks();
+    box.hidden = true;
+  });
+}
+
+$('pickFiles').addEventListener('click', function () {
+  var box = $('filePicker');
+  if (!box.hidden) { box.hidden = true; return; }
+  t.card('attachments').then(function (card) {
+    // Only real files uploaded to the card (skip plain links pasted as attachments)
+    var atts = (card.attachments || []).filter(function (a) { return KC.isTrelloFile(a.url) || a.isUpload; });
+    buildPicker(atts);
+    box.hidden = false;
+  });
 });
 
 $('importBtn').addEventListener('click', function () {

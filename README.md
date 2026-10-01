@@ -50,3 +50,11 @@ Cada proyecto puede tener una imagen que ocupa 1/4 del bloque a la izquierda.
 - O pega un link **directo** a la imagen (que termine en .jpg/.png o que abra solo la imagen).
   Los links de "compartir" de SharePoint (`/:i:/...`) abren una página, no la imagen, y no se van a mostrar.
 Si una imagen no carga, el bloque se muestra sin imagen y los links siguen funcionando.
+
+## Adjuntos de la tarjeta (PDFs, etc.)
+
+En el formulario de cada proyecto, **+ Add from card attachments** muestra los archivos
+subidos a la tarjeta. Marca los que pertenecen a ese proyecto y dale **Add selected**:
+se agregan como links con el nombre del archivo e ícono de PDF.
+Si un archivo ya está en otro proyecto, aparece la etiqueta "in [nombre]".
+Los archivos siguen guardados en Trello; el Power-Up solo los ordena.

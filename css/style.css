@@ -27,6 +27,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; background: var(--bg); color: var(--text);
   font: 14px/1.43 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Ubuntu, sans-serif; }
 body.editor { background: var(--surface); padding: 16px 20px 20px; }
@@ -87,6 +88,18 @@ body.editor { background: var(--surface); padding: 16px 20px 20px; }
 .thumb:hover { border-color: var(--primary); }
 .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 @media (max-width: 480px) { .cover-field { grid-template-columns: 1fr; } }
+
+/* Attachment picker */
+.file-picker { border: 1px solid var(--line); border-radius: 6px; padding: 10px; margin-top: 8px;
+  display: flex; flex-direction: column; gap: 4px; background: var(--surface-2); }
+.file-picker .hint { margin: 0 0 4px; }
+.file-picker .btn { align-self: flex-start; margin-top: 6px; }
+.file-opt { display: flex; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 4px; cursor: pointer; }
+.file-opt:hover { background: var(--chip-hover); }
+.file-opt input { width: auto; margin: 0; }
+.file-opt .chip-icon { color: var(--muted); }
+.file-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-tag { font-size: 12px; color: var(--muted); }
 
 /* Botones */
 .btn { font: inherit; font-weight: 500; border: 0; border-radius: 4px; padding: 6px 12px; cursor: pointer; }

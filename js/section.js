@@ -1,5 +1,5 @@
 /* View inside the card */
-var t = TrelloPowerUp.iframe();
+var t = KC.iframe();
 var app = document.getElementById('app');
 KC.applyTheme(t);
 
@@ -29,7 +29,7 @@ function book(c, i) {
   var img = KC.safeUrl(c.image);
   var cover = img
     ? '<a class="cover" href="' + KC.esc(img) + '" target="_blank" rel="noopener noreferrer" aria-label="Open image for ' + KC.esc(c.name) + '">' +
-        '<img src="' + KC.esc(img) + '" alt="" loading="lazy"></a>'
+        '<img data-src="' + KC.esc(img) + '" alt=""></a>'
     : '';
   return '<article class="book' + (img ? ' has-cover' : '') + '" style="--spine:' + KC.colorHex(c.color) + '">' +
     '<div class="spine" aria-hidden="true"></div>' + cover +
@@ -66,15 +66,18 @@ app.addEventListener('click', function (e) {
 app.addEventListener('load', function (e) {
   if (e.target.tagName === 'IMG') t.sizeTo('#app');
 }, true);
-app.addEventListener('error', function (e) {
-  if (e.target.tagName !== 'IMG') return;
-  var art = e.target.closest('.book');
-  if (art) art.classList.add('cover-broken');
-  t.sizeTo('#app');
-}, true);
+function loadCovers() {
+  Array.prototype.forEach.call(app.querySelectorAll('img[data-src]'), function (img) {
+    KC.loadImage(t, img, img.getAttribute('data-src'), function () {
+      var art = img.closest('.book');
+      if (art) art.classList.add('cover-broken');
+      t.sizeTo('#app');
+    });
+  });
+}
 
 t.render(function () {
-  return KC.get(t).then(render).then(function () { return t.sizeTo('#app'); });
+  return KC.get(t).then(render).then(function () { loadCovers(); return t.sizeTo('#app'); });
 });
 
 // Resize when the panel width changes

@@ -1,4 +1,6 @@
 /* Shared helpers: data, colors, links */
+
+
 var KC = (function () {
   var KEY = 'clients';
   // Trello allows ~4096 characters per card in this scope
@@ -46,6 +48,10 @@ var KC = (function () {
 
   // Link type based on the domain
   function kind(url) {
+    if (isTrelloFile(url)) {
+      var ext = fileExt(url);
+      return { id: ext === 'PDF' ? 'pdf' : 'file', label: ext === 'File' ? 'Trello file' : ext };
+    }
     var h = '';
     try { h = new URL(url).hostname; } catch (e) {}
     if (/sharepoint\.com$|onedrive|1drv\.ms/.test(h)) return { id: 'sharepoint', label: 'SharePoint' };
@@ -62,6 +68,7 @@ var KC = (function () {
       if (k.id === 'matterport') return /\/models\//.test(p) ? 'Completed project' : 'Initial scan';
     } catch (e) {}
     if (k.id === 'sharepoint') return 'Book';
+    if (k.id === 'pdf' || k.id === 'file') return 'Attachment';
     return k.label;
   }
 
@@ -71,6 +78,8 @@ var KC = (function () {
     matterport: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.8 13.5 5v6L8 14.2 2.5 11V5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2.5 5 8 8.2 13.5 5M8 8.2v6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
     google: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 2h5l4 7-2.5 4.5h-8L1.5 9z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
     dropbox: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 2.5 3.5 2.3-3.5 2.3L1 4.8zm7 0L15 4.8l-3.5 2.3L8 4.8zM1 9.4l3.5-2.3L8 9.4l-3.5 2.3zm10.5-2.3L15 9.4l-3.5 2.3L8 9.4z" fill="currentColor"/></svg>',
+    pdf: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 1.5h6l3 3v10h-9z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5.5 8.5h5M5.5 11h5M5.5 6h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    file: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.5 4.5 5.8 9.2a1.5 1.5 0 0 0 2.1 2.1l5-5a3 3 0 0 0-4.2-4.2l-5 5a4.5 4.5 0 0 0 6.4 6.4l3.4-3.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
     web: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.6 9.4a3 3 0 0 0 4.2 0l2.4-2.4a3 3 0 0 0-4.2-4.2l-.8.8M9.4 6.6a3 3 0 0 0-4.2 0L2.8 9a3 3 0 0 0 4.2 4.2l.8-.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>'
   };
 
@@ -101,7 +110,30 @@ var KC = (function () {
     } catch (e) {}
   }
 
+  function fileExt(url) {
+    var m = /\.([a-z0-9]{2,5})(?:[?#]|$)/i.exec(decodeURIComponent(String(url || '').split('?')[0]));
+    return m ? m[1].toUpperCase() : 'File';
+  }
+
+  function isTrelloFile(url) { return /^https:\/\/(api\.)?trello\.com\/1\/cards\//.test(url || ''); }
+
+  function bestPreview(a) {
+    var p = (a.previews || []).filter(function (x) { return x.url; });
+    p.sort(function (x, y) { return (x.width || 0) - (y.width || 0); });
+    for (var i = 0; i < p.length; i++) if ((p[i].width || 0) >= 600) return p[i].url;
+    return p.length ? p[p.length - 1].url : a.url;
+  }
+
+  function loadImage(t, img, url, onFail) {
+    img.onerror = function () { if (onFail) onFail(); };
+    img.src = url;
+  }
+
+  function iframe() { return TrelloPowerUp.iframe(); }
+
   return {
+    isTrelloFile: isTrelloFile, fileExt: fileExt,
+    bestPreview: bestPreview, loadImage: loadImage, iframe: iframe,
     PALETTE: PALETTE, colorHex: colorHex, get: get, save: save, esc: esc,
     safeUrl: safeUrl, kind: kind, autoLabel: autoLabel, ICONS: ICONS,
     parseText: parseText, applyTheme: applyTheme
