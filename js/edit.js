@@ -84,7 +84,8 @@ function upload(file) {
       $('connect').hidden = false;
       showError('Please connect again to allow uploads.');
     } else {
-      showError(err.message);
+      showError('Upload: ' + err.message);
+      console.error('[Projects upload]', err);
     }
   });
 }

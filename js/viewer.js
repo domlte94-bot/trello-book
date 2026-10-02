@@ -102,7 +102,11 @@ function load() {
     });
   }).catch(function (err) {
     if (err && err.message === 'not-authorized') { askConnect(); return; }
-    showMsg('<p>' + KC.esc(err && err.message || 'Something went wrong.') + '</p>');
+    var detail = (err && (err.detail || err.message)) || 'unknown';
+    showMsg('<p>Trello didn’t let the preview load this file.</p>' +
+      '<p><a class="btn ghost" href="' + KC.esc(fileUrl) + '" target="_blank" rel="noopener">Open in Trello instead</a></p>' +
+      '<p class="hint">Details: ' + KC.esc(detail) + '</p>');
+    console.error('[Projects viewer]', detail, fileUrl);
   });
 }
 

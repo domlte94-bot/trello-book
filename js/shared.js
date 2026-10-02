@@ -141,16 +141,38 @@ var KC = (function () {
   function authorize(t) { return api(t).authorize({ scope: 'read,write', expiration: 'never' }); }
 
   // Download a Trello attachment with the user's token -> Blob
+  // Tries a few ways, because browsers can block some of them (CORS)
   function fetchTrelloFile(t, url) {
+    var apiUrl = url.replace('https://trello.com/', 'https://api.trello.com/');
+    var log = [];
     return api(t).getToken().then(function (tok) {
       if (!tok) throw new Error('not-authorized');
-      return fetch(url.replace('https://trello.com/', 'https://api.trello.com/'), {
-        headers: { Authorization: 'OAuth oauth_consumer_key="' + KC_CONFIG.appKey + '", oauth_token="' + tok + '"' }
-      });
-    }).then(function (r) {
-      if (r.status === 401) throw new Error('not-authorized');
-      if (!r.ok) throw new Error('Trello returned an error (' + r.status + ').');
-      return r.blob();
+      var sep = apiUrl.indexOf('?') > -1 ? '&' : '?';
+      var attempts = [
+        function () {
+          return fetch(apiUrl, { headers: { Authorization:
+            'OAuth oauth_consumer_key="' + KC_CONFIG.appKey + '", oauth_token="' + tok + '"' } });
+        },
+        function () {
+          return fetch(apiUrl + sep + 'key=' + encodeURIComponent(KC_CONFIG.appKey) +
+            '&token=' + encodeURIComponent(tok));
+        }
+      ];
+      function next(i) {
+        if (i >= attempts.length) {
+          var e = new Error('blocked'); e.detail = log.join(' | '); throw e;
+        }
+        return attempts[i]().then(function (r) {
+          if (r.ok) return r.blob();
+          log.push('try ' + (i + 1) + ': HTTP ' + r.status);
+          if (r.status === 401 && i === attempts.length - 1) throw new Error('not-authorized');
+          return next(i + 1);
+        }, function (err) {
+          log.push('try ' + (i + 1) + ': ' + (err && err.message));
+          return next(i + 1);
+        });
+      }
+      return next(0);
     });
   }
 
