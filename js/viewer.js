@@ -109,5 +109,6 @@ function load() {
     console.error('[Projects viewer]', detail, fileUrl);
   });
 }
-
+$('vClose').addEventListener('click', function () { t.closeModal(); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') t.closeModal(); });
 load();
