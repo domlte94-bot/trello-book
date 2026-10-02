@@ -3,8 +3,13 @@
 /* ====== CONFIG: paste your Trello API key here (Power-Up admin > API key) ====== */
 var KC_CONFIG = {
   appKey: '080ce5ba9739527301f5f8c14eb29b82',
-  appName: 'Projects'
+  appName: 'Projects',
+  appAuthor: 'Kane Graphical'
 };
+
+/* ====== CONFIG: your Cloudflare Worker URL (see cloudflare-worker/README) ====== */
+var KC_PROXY = 'https://kane-trello-files.domlte94.workers.dev/';   // e.g. https://kane-trello-files.yourname.workers.dev
+
 
 
 var KC = (function () {
@@ -148,7 +153,13 @@ var KC = (function () {
     return api(t).getToken().then(function (tok) {
       if (!tok) throw new Error('not-authorized');
       var sep = apiUrl.indexOf('?') > -1 ? '&' : '?';
-      var attempts = [
+      var authHeader = 'OAuth oauth_consumer_key="' + KC_CONFIG.appKey + '", oauth_token="' + tok + '"';
+      var proxy = KC_PROXY && KC_PROXY.indexOf('PASTE_') !== 0 ? KC_PROXY.replace(/\/+$/, '') : '';
+      var attempts = proxy ? [
+        function () {
+          return fetch(proxy + '/?url=' + encodeURIComponent(apiUrl), { headers: { Authorization: authHeader } });
+        }
+      ] : [
         function () {
           return fetch(apiUrl, { headers: { Authorization:
             'OAuth oauth_consumer_key="' + KC_CONFIG.appKey + '", oauth_token="' + tok + '"' } });
@@ -164,11 +175,11 @@ var KC = (function () {
         }
         return attempts[i]().then(function (r) {
           if (r.ok) return r.blob();
-          log.push('try ' + (i + 1) + ': HTTP ' + r.status);
+          log.push((proxy ? 'worker' : 'try ' + (i + 1)) + ': HTTP ' + r.status);
           if (r.status === 401 && i === attempts.length - 1) throw new Error('not-authorized');
           return next(i + 1);
         }, function (err) {
-          log.push('try ' + (i + 1) + ': ' + (err && err.message));
+          log.push((proxy ? 'worker' : 'try ' + (i + 1)) + ': ' + (err && err.message));
           return next(i + 1);
         });
       }

@@ -75,6 +75,10 @@ La primera vez que abras un archivo te sale **Connect to Trello**: lo aceptas un
 Cada persona del equipo lo hace una vez. El permiso es de lectura y escritura (para poder subir imágenes).
 La API key no es secreta; es normal que esté en el código.
 
+Además, Trello no deja que el navegador lea los archivos directamente, así que la vista previa
+necesita el **puente de Cloudflare**: sigue `cloudflare-worker/README.md` y pega la URL del Worker
+en `js/shared.js` (`PASTE_YOUR_WORKER_URL_HERE`).
+
 Sin API key, los links a adjuntos funcionan como antes (abren/descargan en Trello).
 Los links de SharePoint, Matterport, etc. no cambian.
 
